@@ -2,12 +2,13 @@ import { Layout, Typography } from '@/shared/ui';
 import Sheet from '@/shared/ui/Sheet/Sheet';
 import BottomSheet, { BottomSheetFooter, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
 import { useCallback, useState } from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '@/shared/lib/theme';
-import { Coach, Down, Heart, Moon, Step } from '@/shared/assets';
+import { Coach, Down, Fire, Heart, Moon, Step } from '@/shared/assets';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 interface HomeSheetProps {
   onSheetChange: (isExpanded: boolean) => void;
@@ -191,7 +192,7 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
             Your heart rate is good for now, keep going!
           </Typography>
         </View>
-        <View
+        <TouchableOpacity
           style={{
             backgroundColor: '#fff',
             borderRadius: 30,
@@ -201,6 +202,9 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
             flexDirection: 'column',
             alignItems: 'flex-start',
             width: '100%',
+          }}
+          onPress={() => {
+            TrueSheet.present('sleep-sheet');
           }}>
           {/* Header Row */}
           <View
@@ -378,7 +382,7 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
           <Typography color="gray" size={16}>
             You can enjoy your day and achieve you goals.
           </Typography>
-        </View>
+        </TouchableOpacity>
         <View
           style={{
             backgroundColor: '#fff',
@@ -478,10 +482,100 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
               }}
             />
           </View>
-          <Typography size={20} font="semibold">
+          <Typography size={18} font="semibold">
             You had enough rest today.
           </Typography>
           <Typography color="gray" size={16}>
+            You can enjoy your day and achieve you goals.
+          </Typography>
+        </View>
+        <View
+          style={{
+            backgroundColor: '#fff',
+            borderRadius: 30,
+            padding: 12,
+            borderWidth: 1,
+            borderColor: colors.primary.black + '10',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            width: '100%',
+          }}>
+          {/* Header Row */}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              width: '100%',
+              justifyContent: 'space-between',
+            }}>
+            {/* Icon with hearts */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {/* Main heart icon */}
+              <View>
+                <View
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 28,
+                    backgroundColor: colors.primary.orange,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Fire fill={colors.primary.white} width={20} height={20} />
+                </View>
+              </View>
+              {/* Title */}
+              <Typography color="orange" size={18} font="semibold">
+                Calories
+              </Typography>
+            </View>
+
+            {/* Current bpm */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Typography size={26} font="semibold">
+                200
+              </Typography>
+              <Typography size={18} top={15} color="gray">
+                kcal
+              </Typography>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 4,
+              marginVertical: 10,
+              justifyContent: 'space-between',
+            }}>
+            <Typography size={18} font="medium" color="gray">
+              Normal for your
+            </Typography>
+            <Typography size={18} font="medium">
+              200 kcal
+            </Typography>
+          </View>
+          <View
+            style={{
+              width: '100%',
+              height: 5,
+              backgroundColor: colors.primary.lightGray,
+              borderRadius: 20,
+              marginBottom: 10,
+            }}>
+            <View
+              style={{
+                width: '80%',
+                height: 5,
+                backgroundColor: colors.primary.orange,
+                borderRadius: 20,
+              }}
+            />
+          </View>
+          <Typography size={18} font="semibold">
+            You burned 300 kcal today.
+          </Typography>
+          <Typography color="gray" size={16} align="left">
             You can enjoy your day and achieve you goals.
           </Typography>
         </View>

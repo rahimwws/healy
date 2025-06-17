@@ -7,47 +7,68 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 
-interface AnimatedTextProps {
+interface UserAnimatedTextProps {
   text: string;
   duration?: number;
   textStyle?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;
-  role?: 'Healy' | 'You';
+  isFinished?: boolean;
 }
 
-export const AnimatedText: React.FC<AnimatedTextProps> = ({
+export const UserAnimatedText: React.FC<UserAnimatedTextProps> = ({
   text,
   duration = 3000,
   textStyle,
   containerStyle,
-  role = 'Healy',
+  isFinished = false,
 }) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const isAnimatingRef = useRef(false);
-
+  const hasAnimatedRef = useRef(false);
+  const previousTextRef = useRef(text);
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(30);
 
   const startAnimation = useCallback(() => {
-    if (isAnimatingRef.current || !text || text.trim() === '') return;
-    isAnimatingRef.current = true;
-    opacity.value = withTiming(1, { duration: 500, easing: Easing.out(Easing.ease) });
-    translateY.value = withTiming(0, { duration: 500, easing: Easing.out(Easing.ease) });
+    if (!text || text.trim() === '') return;
 
-    timerRef.current = setTimeout(() => {
-      opacity.value = withTiming(0, { duration: 500, easing: Easing.in(Easing.ease) });
-      translateY.value = withTiming(-30, { duration: 500, easing: Easing.in(Easing.ease) });
-    }, duration);
-  }, [text, duration, opacity, translateY]);
+    // Reset animation state if text changed from empty to non-empty
+    if (previousTextRef.current === '' && text !== '') {
+      hasAnimatedRef.current = false;
+      opacity.value = 0;
+      translateY.value = 30;
+    }
+
+    // If we haven't animated yet, do the entrance animation
+    if (!hasAnimatedRef.current) {
+      hasAnimatedRef.current = true;
+      opacity.value = withTiming(1, { duration: 500, easing: Easing.out(Easing.ease) });
+      translateY.value = withTiming(0, { duration: 500, easing: Easing.out(Easing.ease) });
+    }
+
+    // If speech is finished, do the exit animation
+    if (isFinished) {
+      timerRef.current = setTimeout(() => {
+        opacity.value = withTiming(0, { duration: 500, easing: Easing.in(Easing.ease) });
+        translateY.value = withTiming(-30, { duration: 500, easing: Easing.in(Easing.ease) });
+      }, duration);
+    }
+
+    previousTextRef.current = text;
+  }, [text, duration, opacity, translateY, isFinished]);
 
   useEffect(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
-    isAnimatingRef.current = false;
-    if (!text || text.trim() === '') return;
-    opacity.value = 0;
-    translateY.value = 30;
+
+    if (!text || text.trim() === '') {
+      hasAnimatedRef.current = false;
+      opacity.value = 0;
+      translateY.value = 30;
+      previousTextRef.current = '';
+      return;
+    }
+
     startAnimation();
 
     return () => {
@@ -55,7 +76,7 @@ export const AnimatedText: React.FC<AnimatedTextProps> = ({
         clearTimeout(timerRef.current);
       }
     };
-  }, [text, duration, opacity, startAnimation, translateY]);
+  }, [text, duration, opacity, startAnimation, translateY, isFinished]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -67,10 +88,10 @@ export const AnimatedText: React.FC<AnimatedTextProps> = ({
   return (
     <View style={[styles.container, containerStyle]}>
       <Animated.View style={[styles.textContainer, animatedStyle]}>
-        <View style={styles.assistantContainer}>
-          <View style={styles.assistantDot} />
-          <Text style={[styles.assistant, textStyle]}>{role}</Text>
-          <View style={styles.assistantDot} />
+        <View style={styles.userContainer}>
+          <View style={styles.userDot} />
+          <Text style={[styles.user, textStyle]}>You</Text>
+          <View style={styles.userDot} />
         </View>
         <Text style={[styles.text, textStyle]}>{text}</Text>
       </Animated.View>
@@ -97,20 +118,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'medium',
   },
-  assistantContainer: {
+  userContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
-  assistant: {
+  user: {
     fontSize: 14,
     fontWeight: '600',
     color: '#fff',
     textAlign: 'center',
     fontFamily: 'bold',
   },
-  assistantDot: {
+  userDot: {
     width: 25,
     height: 1.5,
     backgroundColor: 'rgba(128, 128, 128, 0.5)',

@@ -36,12 +36,12 @@ interface CalculatedParticle extends ParticleData {
   y: number;
 }
 
-function generateParticles(isOpen: boolean): ParticleData[] {
+function generateParticles(isOpen: boolean, quantity?: number): ParticleData[] {
   const particles: ParticleData[] = [];
   const centerX = CANVAS_SIZE / 2;
   const centerY = CANVAS_SIZE / 2;
 
-  for (let i = 0; i < NUM_PARTICLES; i++) {
+  for (let i = 0; i < (quantity || NUM_PARTICLES); i++) {
     let distance;
     const angle = Math.random() * 2 * Math.PI;
 
@@ -69,8 +69,16 @@ function generateParticles(isOpen: boolean): ParticleData[] {
   return particles;
 }
 
-const Particles = ({ open = true, title }: { open?: boolean; title?: string }) => {
-  const particles = useMemo(() => generateParticles(open), [open]);
+const Particles = ({
+  open = true,
+  title,
+  quantity,
+}: {
+  open?: boolean;
+  title?: string;
+  quantity?: number;
+}) => {
+  const particles = useMemo(() => generateParticles(open, quantity), [open, quantity]);
   const scale = useSharedValue(1);
   const [calculatedParticles, setCalculatedParticles] = useState<CalculatedParticle[]>([]);
   const lastUpdateTime = useRef<number>(0);

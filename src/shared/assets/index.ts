@@ -4,6 +4,7 @@ export { Settings } from './interface/Settings';
 export { AnimatedText } from './animation/AnimatedText';
 export { default as Particles } from './animation/Particles';
 export { default as GradientBackground } from './animation/GradientBackground';
+export { UserAnimatedText } from './animation/UserAnimatedText';
 
 // Health
 export { Heart } from './interface/health/Heart';
@@ -16,3 +17,4 @@ export { Down } from './interface/Down';
 export { Coach } from './interface/Coach';
 export { DownArrow } from './interface/DownArrow';
 export { GroupSvg } from './svg/Group';
+export { Clipboard } from './interface/Clipboard';

@@ -4,28 +4,30 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   AnimatedText,
+  Clipboard,
   Close,
   GradientBackground,
-  Microphone,
   Particles,
   Settings,
+  UserAnimatedText,
 } from '@/shared/assets';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
-import { Typography } from '@/shared/ui';
-import { useNavigation } from '@react-navigation/native';
 import { useAppNavigation } from '@/shared/lib/navigation';
 
 export default function Chat() {
   const navigation = useAppNavigation();
   const { bottom, top } = useSafeAreaInsets();
-  const [currentText] = useState('Of course we can fix it, let me generate daily tasks for you!');
+  const [currentText] = useState("Hello Your, I'm your AI Assistant");
   const [transcript, setTranscript] = useState('');
   const [volume, setVolume] = useState(0);
-
+  const [speechFinished, setSpeechFinished] = useState(false);
   useSpeechRecognitionEvent('result', (event) => {
     const newTranscript = event.results[0]?.transcript;
     if (newTranscript) {
       setTranscript(newTranscript);
+    }
+    if (event.isFinal) {
+      setSpeechFinished(true);
     }
   });
 
@@ -65,12 +67,13 @@ export default function Chat() {
 
   return (
     <View style={[styles.container]}>
-      <Particles />
+      <Particles quantity={350} />
       <TouchableOpacity style={[styles.settingsButton, { top: top + 10 }]}>
         <Settings />
       </TouchableOpacity>
-      <AnimatedText text={currentText} />
-      <Typography color="white">{transcript}</Typography>
+      <AnimatedText text={currentText} role="Healy" />
+
+      <UserAnimatedText text={transcript} isFinished={speechFinished} />
       <View style={[styles.buttonContainer, { bottom: bottom + 10 }]}>
         <TouchableOpacity
           style={styles.buttonWrapper}
@@ -96,7 +99,7 @@ export default function Chat() {
             end={{ x: 1, y: 1 }}
             style={styles.gradientBorder}>
             <View style={styles.buttonInner}>
-              <Microphone />
+              <Clipboard width={30} height={30} />
             </View>
           </LinearGradient>
         </TouchableOpacity>

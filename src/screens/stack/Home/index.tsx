@@ -3,7 +3,7 @@ import { Layout, Typography } from '@/shared/ui';
 import { Image, TouchableOpacity, View } from 'react-native';
 import React, { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useAppNavigation } from '@/shared/lib/navigation';
-import { HomeSheet } from '@/widgets/home';
+import { HomeSheet, SleepSheet } from '@/widgets/home';
 import { useTheme } from '@/shared/lib/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
@@ -151,7 +151,7 @@ export default function Home() {
               width: 250,
               height: 200,
               position: 'absolute',
-              top: '-20%',
+              top: '-30%',
             }}
             resizeMode="contain"
           />
@@ -161,7 +161,7 @@ export default function Home() {
               width: '100%',
               justifyContent: 'center',
               alignItems: 'center',
-              gap: 50,
+              gap: 35,
               marginBottom: 20,
             }}>
             <View style={{ justifyContent: 'center', alignItems: 'center', height: 40 }}>
@@ -179,6 +179,9 @@ export default function Home() {
               <Typography color="red" align="left" font="semibold">
                 Heart
               </Typography>
+              <Typography color="white" align="left" font="semibold">
+                120 bpm
+              </Typography>
             </View>
             <View style={{ justifyContent: 'center', alignItems: 'center', height: 40 }}>
               <View
@@ -195,6 +198,9 @@ export default function Home() {
               <Typography color="blue" align="left" font="semibold">
                 Sleep
               </Typography>
+              <Typography color="white" align="left" font="semibold">
+                8 hrs
+              </Typography>
             </View>
             <View style={{ justifyContent: 'center', alignItems: 'center', height: 40 }}>
               <View
@@ -209,6 +215,9 @@ export default function Home() {
               </View>
               <Typography color="orange" align="left" font="semibold">
                 Calories
+              </Typography>
+              <Typography color="white" align="left" font="semibold">
+                1 200 kcal
               </Typography>
             </View>
             <View style={{ justifyContent: 'center', alignItems: 'center', height: 40 }}>
@@ -225,11 +234,15 @@ export default function Home() {
               <Typography color="green" align="left" font="semibold">
                 Steps
               </Typography>
+              <Typography color="white" align="left" font="semibold">
+                200 steps
+              </Typography>
             </View>
           </View>
         </View>
       </View>
       <HomeSheet onSheetChange={setIsExpanded} ref={sheetRef as React.RefObject<BottomSheet>} />
+      <SleepSheet />
     </Layout>
   );
 }

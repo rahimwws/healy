@@ -25,8 +25,11 @@ const Sheet = memo(
           snapPoints={sizes}
           style={[
             {
-              backgroundColor: colors.primary.black,
-              borderRadius: 45,
+              backgroundColor: colors.primary.white,
+              borderTopLeftRadius: 45,
+              borderTopRightRadius: 45,
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
               overflow: 'hidden',
             },
             style,

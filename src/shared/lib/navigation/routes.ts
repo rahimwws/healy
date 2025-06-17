@@ -13,6 +13,10 @@ export const AppNavigation = {
     ROOT: 'HomeStack',
     CHAT: 'Chat',
   },
+  GROUP_STACK: {
+    ROOT: 'GroupStack',
+    CREATE_NAME: 'CreateName',
+  },
 } as const;
 
 export type AppNavigationParams = {
@@ -24,6 +28,9 @@ export type AppNavigationParams = {
     screen: keyof typeof AppNavigation.HOME_STACK;
   };
   [AppNavigation.HOME_STACK.CHAT]: undefined;
+  [AppNavigation.GROUP_STACK.ROOT]: {
+    screen: keyof typeof AppNavigation.GROUP_STACK;
+  };
 };
 
 declare global {
