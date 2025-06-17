@@ -3,8 +3,8 @@ import { Group, Home } from '@/screens';
 import { useTheme } from '@/shared/lib/theme';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Easing, TouchableOpacity, View } from 'react-native';
-import { GroupSvg, Heart, Wellness } from '@/shared/assets';
+import { TouchableOpacity, } from 'react-native';
+import { GroupSvg, Wellness } from '@/shared/assets';
 import type { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import * as Haptic from 'expo-haptics';
 import { TransitionPresets } from '@react-navigation/bottom-tabs';
