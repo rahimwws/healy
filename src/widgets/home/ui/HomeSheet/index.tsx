@@ -1,77 +1,62 @@
 import { FillableLine, Typography } from '@/shared/ui';
-import Sheet from '@/shared/ui/Sheet/Sheet';
-import BottomSheet, { BottomSheetFooter, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
-import { useCallback, useMemo } from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
+import { Component, RefObject, useMemo, useRef } from 'react';
+import { Dimensions, ScrollView, TouchableOpacity, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '@/shared/lib/theme';
 import { Fire, Heart, Moon, Step } from '@/shared/assets';
-import { TrueSheet } from '@lodev09/react-native-true-sheet';
+import { SizeChangeEvent, TrueSheet } from '@lodev09/react-native-true-sheet';
 import getStyles from './styles';
 import HeartRateItem from '../HeartRateItem';
 import SleepChart from '../SleepChart';
 
+const screenHeight = Dimensions.get('window').height;
+
 interface HomeSheetProps {
   onSheetChange: (isExpanded: boolean) => void;
-  ref: React.RefObject<BottomSheet>;
+  ref: React.RefObject<TrueSheet>;
 }
 
 export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetProps) {
-  const animatedPosition = useSharedValue(0);
-  const animatedTop = useSharedValue(0);
   const { colors, theme } = useTheme();
   const styles = useMemo(() => getStyles(colors), [theme]);
 
-  const handleAnimate = useCallback(
-    (from: number, to: number) => {
-      if (to > 0.6) {
+  const handleAnimate =
+    async (e: SizeChangeEvent) => {
+      const percentOpen = e.nativeEvent.value / screenHeight
+      if (percentOpen > 0.6) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
         onSheetChange(true);
       } else {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
         onSheetChange(false);
       }
-    },
-    [onSheetChange]
-  );
-  const renderFooter = useCallback(
-    (props: BottomSheetFooterProps) => (
-      <BottomSheetFooter {...props} bottomInset={0}>
-        <BlurView intensity={5} tint="light" style={{ height: 10 }} />
-      </BottomSheetFooter>
-    ),
-    []
-  );
+      // collapsable={false} not work, so fixed like below
+      if (percentOpen < 0.05)
+        await sheetRef.current?.resize(0)
+    }
 
+  const scrollview = useRef<ScrollView>(null)
   return (
-    <Sheet
+    <TrueSheet
       ref={sheetRef}
-      sizes={['15%', '88%']}
-      enableDynamicSizing={false}
-      index={0}
-      scrollViewProps={{
-        contentInsetAdjustmentBehavior: 'automatic',
-        showsVerticalScrollIndicator: false,
-        contentContainerStyle: {
-          paddingBottom: 50,
-        },
-        style: {
-          marginTop: animatedTop,
-        },
-      }}
-      animateOnMount={true}
-      detached={true}
-      onAnimate={handleAnimate}
-      enablePanDownToClose={false}
-      enableOverDrag={false}
-      enableContentPanningGesture={true}
-      enableHandlePanningGesture={true}
-      animatedPosition={animatedPosition}
-      footerComponent={renderFooter}
+      dimmed={false}
+      name='home-sheet'
+      sizes={['20%', '88%']}
+      cornerRadius={20}
+      FooterComponent={
+        <BlurView intensity={5} tint="light" style={{ height: 10 }} />
+      }
+      onDragChange={handleAnimate}
+      scrollRef={scrollview as unknown as RefObject<Component<unknown, {}, any>>}
+      collapsable={false}
     >
-      <View style={styles.container}>
+      <ScrollView
+        ref={scrollview}
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled
+      >
         <Typography size={20} font="semibold" bottom={2}>
           Daily Wellness Tracker
         </Typography>
@@ -307,7 +292,7 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
             You can enjoy your day and achieve you goals.
           </Typography>
         </View>
-      </View>
-    </Sheet>
+      </ScrollView>
+    </TrueSheet>
   );
 }

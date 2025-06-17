@@ -5,9 +5,8 @@ const getStyles = (colors: ColorsT) => StyleSheet.create({
   container: {
     width: '100%',
     paddingHorizontal: 20,
-    flex: 1,
-    height: '100%',
-    gap: 10,
+    marginTop:30,
+    paddingBottom: 40,
   },
   heartRateWrap: {
     flexDirection: 'row',
@@ -27,6 +26,7 @@ const getStyles = (colors: ColorsT) => StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     width: '100%',
+    marginVertical:8
   },
   headRow: {
     flexDirection: 'row',

@@ -8,6 +8,7 @@ import { useTheme } from '@/shared/lib/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import BottomSheet from '@gorhom/bottom-sheet';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 const LazyParticles = React.lazy(() =>
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -119,10 +120,10 @@ export default function Home() {
   const { colors } = useTheme();
   const { top } = useSafeAreaInsets();
   const [isExpanded, setIsExpanded] = useState(false);
-  const sheetRef = useRef<BottomSheet>(null);
+  const sheetRef = useRef<TrueSheet>(null);
   useLayoutEffect(() => {
     if (sheetRef.current) {
-      sheetRef.current.expand();
+      sheetRef.current.present();
     }
   }, []);
   return (
@@ -241,7 +242,7 @@ export default function Home() {
           </View>
         </View>
       </View>
-      <HomeSheet onSheetChange={setIsExpanded} ref={sheetRef as React.RefObject<BottomSheet>} />
+      <HomeSheet onSheetChange={setIsExpanded} ref={sheetRef as React.RefObject<TrueSheet>} />
       <SleepSheet />
     </Layout>
   );
