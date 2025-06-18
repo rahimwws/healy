@@ -12,18 +12,21 @@ export default function SleepSheet() {
   const styles = useMemo(() => getStyles(colors), [theme]);
 
   return (
-    <BottomSheet sizes={['medium']} cornerRadius={0} name="sleep-sheet">
-      <View
-        style={styles.container}>
-        <View
-          style={styles.headWrap}>
-          <View
-            style={styles.headDateWrap}>
+    <BottomSheet
+      sizes={['medium']}
+      cornerRadius={0}
+      name="sleep-sheet"
+      onDismiss={async () => {
+        await TrueSheet.dismiss('sleep-sheet');
+        await TrueSheet.present('home-sheet');
+      }}>
+      <View style={styles.container}>
+        <View style={styles.headWrap}>
+          <View style={styles.headDateWrap}>
             <Typography size={14} font="medium" color="gray">
               W
             </Typography>
-            <View
-              style={styles.headDate}>
+            <View style={styles.headDate}>
               <Typography font="medium" color="white">
                 27
               </Typography>
@@ -32,15 +35,13 @@ export default function SleepSheet() {
           <Typography size={22} font="semibold">
             Sleep
           </Typography>
-          <View
-            style={styles.moonWrap}>
+          <View style={styles.moonWrap}>
             {/* Heart SVG */}
             <Moon fill={colors.primary.white} width={25} height={25} />
           </View>
         </View>
         <View style={{ marginTop: 10, alignItems: 'center' }}>
-          <View
-            style={styles.sleepTime}>
+          <View style={styles.sleepTime}>
             <Typography size={40} font="semibold" color="black">
               8
             </Typography>
@@ -67,8 +68,7 @@ export default function SleepSheet() {
             onPress={() => {
               TrueSheet.dismiss('sleep-sheet');
             }}
-            style={styles.bottomBtn}
-          >
+            style={styles.bottomBtn}>
             <Typography size={18} font="semibold" color="white">
               talk with healy
             </Typography>

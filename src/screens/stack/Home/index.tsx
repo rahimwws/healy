@@ -121,11 +121,7 @@ export default function Home() {
   const { top } = useSafeAreaInsets();
   const [isExpanded, setIsExpanded] = useState(false);
   const sheetRef = useRef<TrueSheet>(null);
-  useLayoutEffect(() => {
-    if (sheetRef.current) {
-      sheetRef.current.present();
-    }
-  }, []);
+
   return (
     <Layout pt={0} px={0}>
       <View

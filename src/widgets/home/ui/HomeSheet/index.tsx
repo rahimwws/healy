@@ -21,60 +21,45 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
   const { colors, theme } = useTheme();
   const styles = useMemo(() => getStyles(colors), [theme]);
 
-  const handleAnimate =
-    async (e: SizeChangeEvent) => {
-      const percentOpen = e.nativeEvent.value / screenHeight
-      if (percentOpen > 0.6) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-        onSheetChange(true);
-      } else {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-        onSheetChange(false);
-      }
-      // collapsable={false} not work, so fixed like below
-      if (percentOpen < 0.05)
-        await sheetRef.current?.resize(0)
+  const handleAnimate = async (e: SizeChangeEvent) => {
+    const percentOpen = e.nativeEvent.value / screenHeight;
+    if (percentOpen > 0.6) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+      onSheetChange(true);
+    } else {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+      onSheetChange(false);
     }
+    if (percentOpen < 0.05) await sheetRef.current?.resize(0);
+  };
 
-  const scrollview = useRef<ScrollView>(null)
   return (
     <TrueSheet
+      initialIndex={0}
+      initialIndexAnimated={false}
       ref={sheetRef}
       dimmed={false}
-      name='home-sheet'
-      sizes={['20%', '88%']}
-      cornerRadius={20}
-      FooterComponent={
-        <BlurView intensity={5} tint="light" style={{ height: 10 }} />
-      }
-      onDragChange={handleAnimate}
-      scrollRef={scrollview as unknown as RefObject<Component<unknown, {}, any>>}
-      collapsable={false}
-    >
+      name="home-sheet"
+      sizes={['20%', '95%']}
+      cornerRadius={40}
+      FooterComponent={<BlurView intensity={5} tint="light" style={{ height: 10 }} />}
+      onSizeChange={handleAnimate}
+      collapsable={false}>
       <ScrollView
-        ref={scrollview}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
-        nestedScrollEnabled
-      >
+        nestedScrollEnabled>
         <Typography size={20} font="semibold" bottom={2}>
           Daily Wellness Tracker
         </Typography>
-        <View
-          style={styles.itemWrap}>
+        <View style={styles.itemWrap}>
           {/* Header Row */}
-          <View
-            style={styles.headRow}>
+          <View style={styles.headRow}>
             {/* Icon with hearts */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               {/* Main heart icon */}
               <View>
-                <View
-                  style={[
-                    { backgroundColor: '#FF7A6C', },
-                    styles.iconWrap
-                  ]}
-                >
+                <View style={[{ backgroundColor: '#FF7A6C' }, styles.iconWrap]}>
                   {/* Heart SVG */}
                   <Heart fill={colors.primary.white} width={20} height={20} />
                 </View>
@@ -97,18 +82,11 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
           </View>
 
           {/* Min/Max Row */}
-          <View
-            style={styles.heartRateWrap}>
+          <View style={styles.heartRateWrap}>
             {/* Min */}
-            <HeartRateItem
-              rate={100}
-              title='Minimum'
-            />
+            <HeartRateItem rate={100} title="Minimum" />
             {/* Max */}
-            <HeartRateItem
-              rate={110}
-              title='Maximum'
-            />
+            <HeartRateItem rate={110} title="Maximum" />
           </View>
 
           {/* Good Heart Rate */}
@@ -121,22 +99,17 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
         </View>
         <TouchableOpacity
           style={styles.itemWrap}
-          onPress={() => {
-            TrueSheet.present('sleep-sheet');
-          }}
-        >
+          onPress={async () => {
+            await sheetRef.current?.dismiss();
+            await TrueSheet.present('sleep-sheet');
+          }}>
           {/* Header Row */}
           <View style={styles.headRow}>
             {/* Icon with hearts */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               {/* Main heart icon */}
               <View>
-                <View
-                  style={[
-                    { backgroundColor: colors.primary.blue, },
-                    styles.iconWrap,
-                  ]}
-                >
+                <View style={[{ backgroundColor: colors.primary.blue }, styles.iconWrap]}>
                   {/* Heart SVG */}
                   <Moon fill={colors.primary.white} width={20} height={20} />
                 </View>
@@ -181,12 +154,7 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               {/* Main heart icon */}
               <View>
-                <View
-                  style={[
-                    { backgroundColor: colors.primary.green, },
-                    styles.iconWrap,
-                  ]}
-                >
+                <View style={[{ backgroundColor: colors.primary.green }, styles.iconWrap]}>
                   {/* Heart SVG */}
                   <Step fill={colors.primary.white} width={18} height={18} />
                 </View>
@@ -205,9 +173,7 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
               <Typography size={18} top={15} color="gray">
                 steps
               </Typography>
-              <View
-                style={styles.stepsCurrent}
-              />
+              <View style={styles.stepsCurrent} />
               <Typography size={26} font="semibold">
                 2.56
               </Typography>
@@ -216,8 +182,7 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
               </Typography>
             </View>
           </View>
-          <View
-            style={styles.goal}>
+          <View style={styles.goal}>
             <Typography size={18} font="medium" color="gray">
               Goal
             </Typography>
@@ -226,9 +191,9 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
             </Typography>
           </View>
           <FillableLine
-            fillPercent='80%'
+            fillPercent="80%"
             lineStyle={{
-              backgroundColor: colors.primary.green
+              backgroundColor: colors.primary.green,
             }}
           />
           <Typography size={18} font="semibold">
@@ -240,17 +205,12 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
         </View>
         <View style={styles.itemWrap}>
           {/* Header Row */}
-          <View
-            style={styles.headRow}>
+          <View style={styles.headRow}>
             {/* Icon with hearts */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               {/* Main heart icon */}
               <View>
-                <View
-                  style={[
-                    { backgroundColor: colors.primary.orange, },
-                    styles.iconWrap
-                  ]}>
+                <View style={[{ backgroundColor: colors.primary.orange }, styles.iconWrap]}>
                   <Fire fill={colors.primary.white} width={20} height={20} />
                 </View>
               </View>
@@ -270,8 +230,7 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
               </Typography>
             </View>
           </View>
-          <View
-            style={styles.goal}>
+          <View style={styles.goal}>
             <Typography size={18} font="medium" color="gray">
               Normal for your
             </Typography>
@@ -280,9 +239,9 @@ export default function HomeSheet({ onSheetChange, ref: sheetRef }: HomeSheetPro
             </Typography>
           </View>
           <FillableLine
-            fillPercent='80%'
+            fillPercent="80%"
             lineStyle={{
-              backgroundColor: colors.primary.orange
+              backgroundColor: colors.primary.orange,
             }}
           />
           <Typography size={18} font="semibold">
