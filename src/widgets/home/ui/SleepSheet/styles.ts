@@ -42,7 +42,7 @@ const getStyles = (colors: ColorsT) => StyleSheet.create({
   },
   bottomActions: {
     position: 'absolute',
-    bottom: 10,
+    bottom: -70,
     left: 0,
     right: 0,
     marginHorizontal: 20,

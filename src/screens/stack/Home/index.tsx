@@ -1,13 +1,13 @@
 import { DownArrow, Fire, Heart, Moon, Step, Tasks } from '@/shared/assets';
 import { Layout, Typography } from '@/shared/ui';
 import { Image, TouchableOpacity, View } from 'react-native';
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useRef, useState } from 'react';
 import { useAppNavigation } from '@/shared/lib/navigation';
-import { HomeSheet, SleepSheet } from '@/widgets/home';
+import { HomeSheet } from '@/widgets/home';
 import { useTheme } from '@/shared/lib/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { TrueSheet } from '@lodev09/react-native-true-sheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 const LazyParticles = React.lazy(() =>
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -119,7 +119,8 @@ export default function Home() {
   const { colors } = useTheme();
   const { top } = useSafeAreaInsets();
   const [isExpanded, setIsExpanded] = useState(false);
-  
+  const sheetRef = useRef<BottomSheet>(null);
+
   return (
     <Layout pt={0} px={0}>
       <View
@@ -236,8 +237,7 @@ export default function Home() {
           </View>
         </View>
       </View>
-      <HomeSheet onSheetChange={setIsExpanded} />
-      <SleepSheet />
+      <HomeSheet onSheetChange={setIsExpanded} ref={sheetRef} />
     </Layout>
   );
 }

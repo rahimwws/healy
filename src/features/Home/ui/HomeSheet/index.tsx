@@ -1,121 +1,72 @@
-import { NativeScrollEvent, View, useWindowDimensions } from 'react-native'
-import { ReactNode, useMemo, useRef } from 'react'
-import { useTheme } from '@/shared/lib/theme';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { ReactNode, useCallback, useEffect, useState, } from 'react'
+import { useSharedValue } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { Typography } from '@/shared/ui';
-import getStyles from './styles';
+import Sheet from '@/shared/ui/Sheet/Sheet';
+import BottomSheet, { BottomSheetFooter, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
+import { BlurView } from 'expo-blur';
+import { View } from 'react-native';
+import styles from './styles';
 
 type Props = {
   onSheetChange: (isExpanded: boolean) => void;
   children: ReactNode
+  ref: React.RefObject<BottomSheet>;
 }
 
-const HomeSheet = ({ onSheetChange, children }: Props) => {
-  const { colors, theme } = useTheme();
-  const styles = useMemo(() => getStyles(colors), [theme]);
-  const { height: screenHeight } = useWindowDimensions();
-  const isAtTop = useRef(false);
-  const scrollAttempts = useRef(0);
-  const scrollViewRef = useRef(null);
+const HomeSheet = ({ onSheetChange, children, ref: sheetRef }: Props) => {
+  const animatedPosition = useSharedValue(-1);
+  const animatedTop = useSharedValue(0);
 
-  const VISIBLE_POSITION = screenHeight * 0.37;
-  const HIDDEN_POSITION = screenHeight;
-  const translateY = useSharedValue(HIDDEN_POSITION);
-
-  const handleAnimate = (value: boolean) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-    onSheetChange(value);
-  };
-  const handleScroll = (event: NativeScrollEvent) => {
-    const offsetY = event.contentOffset.y;
-    const currentlyAtTop = offsetY <= 0;
-    
-    if (currentlyAtTop) {
-      if (!isAtTop.current) {
-        // Первый раз доскролили до верха
-        isAtTop.current = true;
-        scrollAttempts.current = 1;
+  const handleAnimate = useCallback(
+    (from: number, to: number) => {
+      if (to > 0.6) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+        onSheetChange(true);
       } else {
-        // Уже были наверху - увеличиваем счетчик
-        scrollAttempts.current += 1;
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+        onSheetChange(false);
       }
-      
-      // Если дважды доскролили до верха - закрываем
-      if (scrollAttempts.current >= 2) {
-        translateY.value = withTiming(HIDDEN_POSITION);
-        handleAnimate(false);
-        scrollAttempts.current = 0;
-      }
-    } else {
-      // Ушли с верха - сбрасываем состояние
-      isAtTop.current = false;
-      scrollAttempts.current = 0;
-    }
-  };
-
-  const panGesture = Gesture.Pan()
-    .onChange((event) => {
-      translateY.value += event.changeY;
-      if (translateY.value < VISIBLE_POSITION) translateY.value = VISIBLE_POSITION;
-      if (translateY.value > HIDDEN_POSITION) translateY.value = HIDDEN_POSITION;
-    })
-    .onEnd((event) => {
-      const threshold = screenHeight * 0.05;
-      const deltaY = event.translationY;
-
-      const pulledUpEnough = deltaY < -threshold;
-      const pulledDownEnough = deltaY > threshold;
-
-      if (pulledUpEnough) {
-        translateY.value = withTiming(VISIBLE_POSITION);
-        runOnJS(handleAnimate)(true);
-      } else if (pulledDownEnough) {
-        translateY.value = withTiming(HIDDEN_POSITION);
-        runOnJS(handleAnimate)(false);
-      } else {
-        const midpoint = (HIDDEN_POSITION + VISIBLE_POSITION) / 2;
-        const shouldExpand = translateY.value < midpoint;
-        translateY.value = withTiming(
-          shouldExpand ? VISIBLE_POSITION : HIDDEN_POSITION
-        );
-        runOnJS(handleAnimate)(shouldExpand);
-      }
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }));
+    },
+    [onSheetChange]
+  );
+  const renderFooter = useCallback(
+    (props: BottomSheetFooterProps) => (
+      <BottomSheetFooter {...props} bottomInset={0}>
+        <BlurView intensity={5} tint="light" style={{ height: 10 }} />
+      </BottomSheetFooter>
+    ),
+    []
+  );
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
-      {/* Top drag handle area */}
-      <GestureDetector gesture={panGesture}>
-        <View style={styles.topHandleArea}>
-          <View style={styles.topBorderWrap}>
-            <View style={styles.topBorder} />
-          </View>
-          <Typography size={20} font="semibold" top={3} align='left'>
-            Daily Wellness Tracker
-          </Typography>
-        </View>
-      </GestureDetector>
-
-      {/* Scrollable content area */}
-      <Animated.ScrollView
-        bounces={false}
-        scrollEventThrottle={16}
-        showsVerticalScrollIndicator={false}
-        style={styles.containerInner}
-        contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
-        onScrollEndDrag={({ nativeEvent }) => handleScroll(nativeEvent)}
-        onMomentumScrollEnd={({ nativeEvent }) => handleScroll(nativeEvent)}
-        ref={scrollViewRef}
-      >
+    <Sheet
+      ref={sheetRef}
+      sizes={['15%', '88%']}
+      enableDynamicSizing={false}
+      index={0}
+      scrollViewProps={{
+        contentInsetAdjustmentBehavior: 'automatic',
+        showsVerticalScrollIndicator: false,
+        contentContainerStyle: {
+          paddingBottom: 50,
+        },
+        style: {
+          marginTop: animatedTop,
+        },
+      }}
+      detached={true}
+      onAnimate={handleAnimate}
+      enablePanDownToClose={false}
+      enableOverDrag={false}
+      enableContentPanningGesture={true}
+      enableHandlePanningGesture={true}
+      animatedPosition={animatedPosition}
+      footerComponent={renderFooter}
+    >
+      <View style={styles.container}>
         {children}
-      </Animated.ScrollView>
-    </Animated.View>
+      </View>
+    </Sheet>
   )
 }
 

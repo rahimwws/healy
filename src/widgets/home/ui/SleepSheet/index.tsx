@@ -1,25 +1,49 @@
 import { Moon } from '@/shared/assets/interface/health/Moon';
 import { useTheme } from '@/shared/lib/theme';
-import { BottomSheet, Typography } from '@/shared/ui';
-import { TrueSheet } from '@lodev09/react-native-true-sheet';
+import { Typography } from '@/shared/ui';
 import { TouchableOpacity, View } from 'react-native';
-import { useMemo } from 'react';
+import { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import getStyles from './styles';
 import SleepChart from '../SleepChart';
+import Sheet from '@/shared/ui/Sheet/Sheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 
-export default function SleepSheet() {
+type Props = {
+  onPressTalk?: () => void
+  onClose?: () => void
+}
+
+const SleepSheet = forwardRef<BottomSheet, Props>((props, ref) => {
+  const {
+    onPressTalk,
+    onClose
+  } = props;
   const { colors, theme } = useTheme();
   const styles = useMemo(() => getStyles(colors), [theme]);
+  const didMounted = useRef(false); // to prevent calling handleClose on open
+
+  useEffect(() => {
+    setTimeout(() => {
+      didMounted.current = true;
+    }, 2000); // short delay
+  }, []);
+
+  const handleClose = () => {
+    if (didMounted.current) {
+      onClose?.();
+    }
+  };
 
   return (
-    <BottomSheet
-      sizes={['medium']}
-      cornerRadius={0}
-      name="sleep-sheet"
-      onDismiss={async () => {
-        await TrueSheet.dismiss('sleep-sheet');
-        await TrueSheet.present('home-sheet');
-      }}>
+    <Sheet
+      ref={ref}
+      sizes={['60%']}
+      onClose={handleClose}
+      enableDynamicSizing={false}
+      enablePanDownToClose
+      animateOnMount
+      index={-1}
+    >
       <View style={styles.container}>
         <View style={styles.headWrap}>
           <View style={styles.headDateWrap}>
@@ -65,9 +89,7 @@ export default function SleepSheet() {
         <View style={styles.bottomActions}>
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => {
-              TrueSheet.dismiss('sleep-sheet');
-            }}
+            onPress={onPressTalk}
             style={styles.bottomBtn}>
             <Typography size={18} font="semibold" color="white">
               talk with healy
@@ -75,6 +97,8 @@ export default function SleepSheet() {
           </TouchableOpacity>
         </View>
       </View>
-    </BottomSheet>
+    </Sheet>
   );
-}
+})
+
+export default SleepSheet;
