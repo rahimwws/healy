@@ -3,15 +3,6 @@ import { StyleSheet } from 'react-native';
 
 const getStyles = (colors: ColorsT) =>
   StyleSheet.create({
-    container: {
-      width: '100%',
-      paddingHorizontal: 20,
-      marginTop: 30,
-      paddingBottom: 40,
-      backgroundColor: colors.primary.white,
-      borderTopLeftRadius: 50,
-      borderTopRightRadius: 50,
-    },
     heartRateWrap: {
       flexDirection: 'row',
       width: '100%',
@@ -30,7 +21,7 @@ const getStyles = (colors: ColorsT) =>
       flexDirection: 'column',
       alignItems: 'flex-start',
       width: '100%',
-      marginVertical: 8,
+      marginBottom: 5,
     },
     headRow: {
       flexDirection: 'row',
