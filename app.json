@@ -22,7 +22,6 @@
         }
       ],
       "expo-speech-recognition",
-      // or with config
       [
         "expo-speech-recognition",
         {

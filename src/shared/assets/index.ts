@@ -18,3 +18,4 @@ export { Coach } from './interface/Coach';
 export { DownArrow } from './interface/DownArrow';
 export { GroupSvg } from './svg/Group';
 export { Clipboard } from './interface/Clipboard';
+export { ClipboardWithCross } from './interface/ClipboardWithCross';

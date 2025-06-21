@@ -34,10 +34,10 @@ export const AnimatedText: React.FC<AnimatedTextProps> = ({
     opacity.value = withTiming(1, { duration: 500, easing: Easing.out(Easing.ease) });
     translateY.value = withTiming(0, { duration: 500, easing: Easing.out(Easing.ease) });
 
-    timerRef.current = setTimeout(() => {
-      opacity.value = withTiming(0, { duration: 500, easing: Easing.in(Easing.ease) });
-      translateY.value = withTiming(-30, { duration: 500, easing: Easing.in(Easing.ease) });
-    }, duration);
+    // timerRef.current = setTimeout(() => {
+    //   opacity.value = withTiming(0, { duration: 500, easing: Easing.in(Easing.ease) });
+    //   translateY.value = withTiming(-30, { duration: 500, easing: Easing.in(Easing.ease) });
+    // }, duration);
   }, [text, duration, opacity, translateY]);
 
   useEffect(() => {
@@ -67,11 +67,11 @@ export const AnimatedText: React.FC<AnimatedTextProps> = ({
   return (
     <View style={[styles.container, containerStyle]}>
       <Animated.View style={[styles.textContainer, animatedStyle]}>
-        <View style={styles.assistantContainer}>
+        {/* <View style={styles.assistantContainer}>
           <View style={styles.assistantDot} />
           <Text style={[styles.assistant, textStyle]}>{role}</Text>
           <View style={styles.assistantDot} />
-        </View>
+        </View> */}
         <Text style={[styles.text, textStyle]}>{text}</Text>
       </Animated.View>
     </View>
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#FFFFFF',
+    color: 'gray',
     textAlign: 'center',
     fontFamily: 'medium',
   },

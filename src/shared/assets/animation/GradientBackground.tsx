@@ -85,6 +85,7 @@ export const GradientBackground: React.FC<GradientBackgroundProps> = ({ volume }
       style={{
         position: 'absolute',
         bottom: 0,
+        zIndex:0,
         width: width,
         height: GRADIENT_HEIGHT,
       }}>
